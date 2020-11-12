@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6.8
+
+      - name: Install twine
+        run: pip install -U twine
+
+      - name: Build
+        run: python setup.py sdist bdist_wheel
+
+      - name: Deploy
+        run: twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+          TWINE_REPOSITORY: pypi
